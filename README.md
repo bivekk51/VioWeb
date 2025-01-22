@@ -90,7 +90,7 @@ By default, the frontend server will run on `http://localhost:3000`.
    ```
 2. Start the **frontend server**:
    ```bash
-   npm start
+   npm run dev
    ```
 3. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to use the application.
 
@@ -101,7 +101,8 @@ By default, the frontend server will run on `http://localhost:3000`.
 ```
 violence-detection-system/
 ├── backend/
-│   ├── models/
+│   ├── uploads/
+│   ├── image.py
 │   ├── server.py
 │   ├── video.py
 │   ├── requirements.txt
