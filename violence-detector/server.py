@@ -14,18 +14,20 @@ from datetime import datetime
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app, resources={r"/upload": {"origins": "http://localhost:5173"}})
-
+CORS(app, resources={r"/*": {"origins": "*"}})
 # Set the upload folder for video files
 UPLOAD_FOLDER = './uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 TELEGRAM_BOT_TOKEN = "7942578600:AAGvoDCo517xEvMWJ5xeuzqDAD3hLDYftsg"
 TELEGRAM_CHAT_ID = "5110056847"  
 
-async def send_telegram_alert(video_path):
+async def send_telegram_alert(video_path,report):
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    caption = f"Violence detected, Time: {current_time} Clip: \n"
+    if report.get("average_accuracy", 0) > 0.7: 
+        caption = f"Extreme Violence detected, Time: {current_time} Clip: \n"
+    elif report.get("average_accuracy", 0) > 0.5:
+        caption=  f"Probable Violence detected, Time: {current_time} Clip:\n"
     
     try:
         with open(video_path, "rb") as video:
@@ -55,13 +57,14 @@ def upload_video():
         
         raw_output = result.stdout.strip()
         
-
+        print(raw_output)
         
         json_match = re.search(r'\{.*\}', raw_output, re.DOTALL)
         if json_match:
             report = json.loads(json_match.group(0))  
             if report.get("average_accuracy", 0) > 0.5:
-                asyncio.run(send_telegram_alert(video_path))
+                asyncio.run(send_telegram_alert(video_path,report))
+            print("response sent")
             return jsonify(report)
         else:
             return jsonify({
