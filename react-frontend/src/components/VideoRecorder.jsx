@@ -1,50 +1,64 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 
 const VideoRecorder = () => {
   const webcamRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const [recording, setRecording] = useState(false);
+  const recordingIntervalRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [isBackCamera, setIsBackCamera] = useState(false);
   const [responseMessage, setResponseMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [violenceAlerts, setViolenceAlerts] = useState([]); // Store violent timestamps
 
   const videoConstraints = {
     facingMode: isBackCamera ? "environment" : "user",
   };
 
   const startRecording = () => {
-    setRecording(true);
+    if (isRecording) return;
+    setIsRecording(true);
     setResponseMessage("");
     setErrorMessage("");
-    mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
+
+    recordingIntervalRef.current = setInterval(() => {
+      captureAndSendVideo();
+    }, 5000);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    clearInterval(recordingIntervalRef.current);
+  };
+
+  const captureAndSendVideo = () => {
+    if (!webcamRef.current || !webcamRef.current.stream) return;
+
+    const mediaRecorder = new MediaRecorder(webcamRef.current.stream, {
       mimeType: "video/webm",
     });
 
     const chunks = [];
-    mediaRecorderRef.current.ondataavailable = (event) => {
+    mediaRecorder.ondataavailable = (event) => {
       chunks.push(event.data);
     };
 
-    mediaRecorderRef.current.onstop = () => {
+    mediaRecorder.onstop = async () => {
       const videoBlob = new Blob(chunks, { type: "video/webm" });
-      sendVideo(videoBlob);
+      await sendVideo(videoBlob);
     };
 
-    mediaRecorderRef.current.start();
-    setTimeout(() => stopRecording(), 5000); // Automatically stop after 5 seconds
-  };
-
-  const stopRecording = () => {
-    setRecording(false);
-    mediaRecorderRef.current.stop();
+    mediaRecorder.start();
+    setTimeout(() => mediaRecorder.stop(), 3000);
   };
 
   const sendVideo = async (videoBlob) => {
-    setLoading(true); // Show processing message
+    setLoading(true);
     const formData = new FormData();
-    formData.append("video", videoBlob, "capture.webm");
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, "_"); // Unique filename
+    const filename = `capture_${timestamp}.webm`;
+
+    formData.append("video", videoBlob, filename);
 
     try {
       const response = await fetch("http://192.168.1.78:5000/upload", {
@@ -56,23 +70,46 @@ const VideoRecorder = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
-      console.log("Video uploaded successfully:", data);
-
-      const { average_accuracy } = data;
-      if (average_accuracy > 0.7) {
-        setResponseMessage("🔴 Extreme violence detected.");
-      } else if (average_accuracy > 0.5) {
-        setResponseMessage("🟠 Probable violence detected.");
-      } else {
-        setResponseMessage("🟢 No violence detected.");
-      }
+      console.log("Video uploaded successfully:", filename);
+      pollForResults(filename);
     } catch (error) {
       console.error("Error uploading video:", error);
       setErrorMessage("Failed to upload the video. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  
+  const pollForResults = (filename) => {
+    setLoading(true);
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`http://192.168.1.78:5000/result/${filename}`)
+
+        if (!response.ok) throw new Error("No results yet");
+
+        const data = await response.json();
+        console.log("Received results:", data);
+
+        const { average_accuracy } = data;
+        if (average_accuracy > 0.7) {
+          setResponseMessage("🔴 Extreme violence detected.");
+          setViolenceAlerts((prev) => [...prev, `Extreme violence detected at ${filename.replace("capture_", "").replace(".webm", "").replace(/_/g, ":")}`]);
+        } else if (average_accuracy > 0.5) {
+          setResponseMessage("🟠 Probable violence detected.");
+          setViolenceAlerts((prev) => [...prev, `Probable violence detected at ${filename.replace("capture_", "").replace(".webm", "").replace(/_/g, ":")}`]);
+        } else {
+          setResponseMessage("🟢 No violence detected.");
+        }
+
+        clearInterval(interval);
+        setLoading(false);
+      } catch (error) {
+        console.log("Waiting for processing...");
+      }
+    }, 10000);
   };
 
   return (
@@ -87,12 +124,19 @@ const VideoRecorder = () => {
       <div className="mt-4 flex gap-4">
         <button
           onClick={startRecording}
-          disabled={recording}
+          disabled={isRecording}
           className={`px-4 py-2 rounded ${
-            recording ? "bg-gray-500 text-white" : "bg-blue-500 text-white"
+            isRecording ? "bg-gray-500 text-white" : "bg-blue-500 text-white"
           }`}
         >
-          {recording ? "Recording..." : "Start Recording"}
+          {isRecording ? "Recording..." : "Start Continuous Recording"}
+        </button>
+        <button
+          onClick={stopRecording}
+          disabled={!isRecording}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Stop Recording
         </button>
         <button
           onClick={() => setIsBackCamera((prev) => !prev)}
@@ -105,19 +149,35 @@ const VideoRecorder = () => {
       {responseMessage && (
         <div className="mt-4">
           <h3
-            className={
+            className={`text-lg font-bold transition-opacity ${
               responseMessage.includes("Extreme")
-                ? "text-red-500"
+                ? "text-red-500 animate-pulse"
                 : responseMessage.includes("Probable")
-                ? "text-orange-500"
+                ? "text-orange-500 animate-pulse"
                 : "text-green-500"
-            }
+            }`}
           >
             {responseMessage}
           </h3>
         </div>
       )}
       {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
+
+      {/* Violence alert dekhauney animation for now */}
+      {violenceAlerts.length > 0 && (
+        <div className="mt-6 w-full max-w-md bg-black text-white p-4 rounded-lg shadow-lg">
+          <h3 className="text-xl font-bold mb-2 text-red-400 animate-ping">
+            ⚠️ Violence Detected
+          </h3>
+          <ul className="space-y-2">
+            {violenceAlerts.map((alert, index) => (
+              <li key={index} className="bg-red-600 p-2 rounded-lg animate-pulse">
+                {alert}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
