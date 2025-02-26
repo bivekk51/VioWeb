@@ -76,7 +76,7 @@ npm install
 
 #### Start the Frontend Server
 ```bash
-npm start
+npm run dev
 ```
 By default, the frontend server will run on `http://localhost:3000`.
 
@@ -132,7 +132,7 @@ violence-detection-system/
    Ensure you have enabled CORS in your Flask backend. You can use the `flask-cors` library.
 
 2. **Port Conflicts**:  
-   Ensure no other services are using ports `3000` (frontend) or `5000` (backend).
+   Ensure no other services are using ports `5173` (frontend) or `5000` (backend).
 
 ---
 
