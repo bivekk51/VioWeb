@@ -109,7 +109,7 @@ const VideoRecorder = () => {
       } catch (error) {
         console.log("Waiting for processing...");
       }
-    }, 10000);
+    }, 5000);
   };
 
   return (

@@ -32,7 +32,7 @@ const VideoUploader = () => {
     formData.append("video", selectedFile);
 
     try {
-      const response = await fetch("http://192.168.1.78:5000/upload", {
+      const response = await fetch("http://192.168.1.78:5000/videoupload", {
         method: "POST",
         body: formData,
       });

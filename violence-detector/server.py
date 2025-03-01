@@ -7,7 +7,8 @@ import re
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
-
+from telegram import Bot
+import asyncio
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -15,13 +16,32 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 UPLOAD_FOLDER = "./uploads"
-PROCESSED_FOLDER = "./processed"
+DIRECT_UPLOAD="./directupload"
 RESULTS_FILE = "results.json"
+TELEGRAM_BOT_TOKEN = "7942578600:AAGvoDCo517xEvMWJ5xeuzqDAD3hLDYftsg"
+TELEGRAM_CHAT_ID = "5110056847"  
+
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure upload folder exists
-os.makedirs(PROCESSED_FOLDER, exist_ok=True)  # Ensure processed folder exists
+
 
 # Load existing results from file if available
+async def send_telegram_alert(video_path,report):
+    bot = Bot(token=TELEGRAM_BOT_TOKEN)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if report.get("average_accuracy", 0) > 0.7: 
+        caption = f"Extreme Violence detected, Time: {current_time} Clip: \n"
+    elif report.get("average_accuracy", 0) > 0.5:
+        caption=  f"Probable Violence detected, Time: {current_time} Clip:\n"
+    
+    try:
+        with open(video_path, "rb") as video:
+            await bot.send_video(chat_id=TELEGRAM_CHAT_ID, video=video, caption=caption)
+        print("Video sent successfully!")
+    except FileNotFoundError:
+        print("Video file not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 def load_results():
     if os.path.exists(RESULTS_FILE):
         try:
@@ -54,7 +74,9 @@ def process_video(video_path):
 
         json_match = re.search(r'\{.*\}', raw_output, re.DOTALL)
         if json_match:
-            report = json.loads(json_match.group(0))  
+            report = json.loads(json_match.group(0))
+            if report.get("average_accuracy", 0) > 0.5:
+                asyncio.run(send_telegram_alert(video_path,report))
             filename = os.path.basename(video_path)
             video_results[filename] = report  # Store result
             save_results(video_results)  # Persist results
@@ -103,6 +125,18 @@ def monitor_and_process_videos():
 
         logging.info("All videos processed. Sleeping for 10 seconds...")
         time.sleep(10)
+        
+@app.route('/videoupload',methods=['POST'])
+def video_upload():
+    if 'video' not in request.files:
+        return jsonify({"error": "No video file provided"}), 400
+
+    video = request.files['video']
+    original_filename = video.filename  
+    video_path = os.path.join(DIRECT_UPLOAD, original_filename)
+    video.save(video_path)
+    uploadresult=process_video(video_path)
+    return jsonify(uploadresult)
 
 @app.route('/upload', methods=['POST'])
 def upload_video():

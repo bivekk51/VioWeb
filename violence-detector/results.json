@@ -94,5 +94,21 @@
   "capture_2025_03_01T03_13_04_192Z.webm": {
     "highest_accuracy": 0.06909642368555069,
     "average_accuracy": 0.012447203509509563
+  },
+  "V_19.mp4": {
+    "highest_accuracy": 0.9999265670776367,
+    "average_accuracy": 0.9518671035766602
+  },
+  "Screencast From 2024-10-25 20-00-38.webm": {
+    "highest_accuracy": 0.8490962982177734,
+    "average_accuracy": 0.481687992811203
+  },
+  "capture_2025_03_01T06_37_20_557Z.webm": {
+    "highest_accuracy": 0.58294278383255,
+    "average_accuracy": 0.3906958997249603
+  },
+  "capture_2025_03_01T06_37_25_404Z.webm": {
+    "highest_accuracy": 0.6831995248794556,
+    "average_accuracy": 0.5030719637870789
   }
 }
