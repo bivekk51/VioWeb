@@ -70,5 +70,29 @@
   "capture_2025_02_26T17_28_35_349Z.webm": {
     "highest_accuracy": 0.3922252953052521,
     "average_accuracy": 0.3217736780643463
+  },
+  "capture_2025_02_27T08_56_02_000Z.webm": {
+    "highest_accuracy": 0.3292064070701599,
+    "average_accuracy": 0.2626378536224365
+  },
+  "capture_2025_02_27T08_56_06_759Z.webm": {
+    "highest_accuracy": 0.36577844619750977,
+    "average_accuracy": 0.3014717102050781
+  },
+  "capture_2025_03_01T03_09_50_820Z.webm": {
+    "highest_accuracy": 0.543389081954956,
+    "average_accuracy": 0.5173916220664978
+  },
+  "capture_2025_03_01T03_09_55_590Z.webm": {
+    "highest_accuracy": 0.5218433737754822,
+    "average_accuracy": 0.5103835463523865
+  },
+  "capture_2025_03_01T03_12_27_165Z.webm": {
+    "highest_accuracy": 0.0006760041578672826,
+    "average_accuracy": 0.00032799760811030865
+  },
+  "capture_2025_03_01T03_13_04_192Z.webm": {
+    "highest_accuracy": 0.06909642368555069,
+    "average_accuracy": 0.012447203509509563
   }
 }

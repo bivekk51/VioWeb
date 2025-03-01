@@ -113,66 +113,99 @@ const VideoRecorder = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <Webcam
-        audio={false}
-        ref={webcamRef}
-        videoConstraints={videoConstraints}
-        mirrored={!isBackCamera}
-        className="w-full max-w-md"
-      />
-      <div className="mt-4 flex gap-4">
+    <div className="flex flex-col items-center  p-6 bg-gradient-to-b from-gray-800 to-blue-900  shadow-2xl">
+      <div className="relative w-full max-w-md border-4 border-blue-400 rounded-xl overflow-hidden shadow-lg">
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          videoConstraints={videoConstraints}
+          mirrored={!isBackCamera}
+          className="w-full max-w-md"
+        />
+      </div>
+      
+      <div className="mt-6 flex gap-4 flex-wrap justify-center">
         <button
           onClick={startRecording}
           disabled={isRecording}
-          className={`px-4 py-2 rounded ${
-            isRecording ? "bg-gray-500 text-white" : "bg-blue-500 text-white"
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg ${
+            isRecording 
+              ? "bg-gray-600 text-gray-300 cursor-not-allowed" 
+              : "bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 transform hover:-translate-y-1"
           }`}
         >
           {isRecording ? "Recording..." : "Start Continuous Recording"}
         </button>
+        
         <button
           onClick={stopRecording}
           disabled={!isRecording}
-          className="bg-red-500 text-white px-4 py-2 rounded"
+          className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg ${
+            !isRecording
+              ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+              : "bg-gradient-to-r from-red-500 to-red-700 text-white hover:from-red-600 hover:to-red-800 transform hover:-translate-y-1"
+          }`}
         >
           Stop Recording
         </button>
+        
         <button
           onClick={() => setIsBackCamera((prev) => !prev)}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
+          className="bg-gradient-to-r from-gray-600 to-gray-800 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:from-gray-700 hover:to-gray-900 transform hover:-translate-y-1"
         >
           Switch to {isBackCamera ? "Front" : "Back"} Camera
         </button>
       </div>
-      {loading && <p className="text-blue-500 mt-4">Processing video...</p>}
+      
+      {loading && (
+        <div className="mt-6 flex items-center">
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-400 mr-3"></div>
+          <p className="text-blue-300 font-medium">Processing video...</p>
+        </div>
+      )}
+      
       {responseMessage && (
-        <div className="mt-4">
+        <div className="mt-6 w-full max-w-md">
           <h3
-            className={`text-lg font-bold transition-opacity ${
+            className={`text-xl font-bold px-4 py-2 rounded-lg text-center transition-all ${
               responseMessage.includes("Extreme")
-                ? "text-red-500 animate-pulse"
+                ? "bg-red-700 bg-opacity-70 text-white animate-pulse"
                 : responseMessage.includes("Probable")
-                ? "text-orange-500 animate-pulse"
-                : "text-green-500"
+                ? "bg-orange-600 bg-opacity-70 text-white animate-pulse"
+                : "bg-green-600 bg-opacity-70 text-white"
             }`}
           >
             {responseMessage}
           </h3>
         </div>
       )}
-      {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
-
-      {/* Violence alert dekhauney animation for now */}
+      
+      {errorMessage && (
+        <div className="mt-6 w-full max-w-md bg-red-900 bg-opacity-70 p-4 rounded-lg">
+          <p className="text-white font-medium">{errorMessage}</p>
+        </div>
+      )}
+      
+      {/* Enhanced Violence alert with dramatic animation */}
       {violenceAlerts.length > 0 && (
-        <div className="mt-6 w-full max-w-md bg-black text-white p-4 rounded-lg shadow-lg">
-          <h3 className="text-xl font-bold mb-2 text-red-400 animate-ping">
-            ⚠️ Violence Detected
-          </h3>
-          <ul className="space-y-2">
+        <div className="mt-8 w-full max-w-lg bg-black bg-opacity-80 text-white p-6 rounded-lg shadow-2xl border-2 border-red-500 animate-bounce">
+          <div className="flex items-center justify-center mb-3">
+            <svg className="w-8 h-8 text-red-500 mr-2 animate-ping" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+            </svg>
+            <h3 className="text-2xl font-bold text-red-500 animate-pulse">
+              VIOLENCE DETECTED
+            </h3>
+            <svg className="w-8 h-8 text-red-500 ml-2 animate-ping" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+            </svg>
+          </div>
+          <div className="w-full h-1 bg-red-500 mb-4 animate-pulse"></div>
+          <ul className="space-y-3">
             {violenceAlerts.map((alert, index) => (
-              <li key={index} className="bg-red-600 p-2 rounded-lg animate-pulse">
-                {alert}
+              <li key={index} className="bg-red-800 p-3 rounded-lg flex items-center shadow-inner">
+                <span className="inline-block w-2 h-2 bg-red-400 rounded-full animate-ping mr-2"></span>
+                <span className="font-medium">{alert}</span>
               </li>
             ))}
           </ul>
