@@ -110,5 +110,45 @@
   "capture_2025_03_01T06_37_25_404Z.webm": {
     "highest_accuracy": 0.6831995248794556,
     "average_accuracy": 0.5030719637870789
+  },
+  "capture_2025_03_01T12_29_32_598Z.webm": {
+    "highest_accuracy": 0.27409037947654724,
+    "average_accuracy": 0.23541796207427979
+  },
+  "capture_2025_03_01T12_29_37_546Z.webm": {
+    "highest_accuracy": 0.5454928874969482,
+    "average_accuracy": 0.45503830909729004
+  },
+  "capture_2025_03_01T12_31_01_334Z.webm": {
+    "highest_accuracy": 0.3610461354255676,
+    "average_accuracy": 0.3233935236930847
+  },
+  "capture_2025_03_01T12_30_56_335Z.webm": {
+    "highest_accuracy": 0.1737643927335739,
+    "average_accuracy": 0.15733462572097778
+  },
+  "capture_2025_03_01T12_31_06_329Z.webm": {
+    "highest_accuracy": 0.25010162591934204,
+    "average_accuracy": 0.2441747933626175
+  },
+  "capture_2025_03_01T12_31_26_334Z.webm": {
+    "highest_accuracy": 0.4962065517902374,
+    "average_accuracy": 0.33599019050598145
+  },
+  "capture_2025_03_01T12_31_21_329Z.webm": {
+    "highest_accuracy": 0.38421696424484253,
+    "average_accuracy": 0.30603957176208496
+  },
+  "capture_2025_03_01T12_31_11_329Z.webm": {
+    "highest_accuracy": 0.24980050325393677,
+    "average_accuracy": 0.21147775650024414
+  },
+  "capture_2025_03_01T12_31_16_333Z.webm": {
+    "highest_accuracy": 0.31824183464050293,
+    "average_accuracy": 0.2730827033519745
+  },
+  "Non Violence": {
+    "highest_accuracy": 0.7166640162467957,
+    "average_accuracy": 0.23381149768829346
   }
 }

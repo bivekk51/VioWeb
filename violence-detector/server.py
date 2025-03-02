@@ -22,10 +22,9 @@ TELEGRAM_BOT_TOKEN = "7942578600:AAGvoDCo517xEvMWJ5xeuzqDAD3hLDYftsg"
 TELEGRAM_CHAT_ID = "5110056847"  
 
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Ensure upload folder exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)  
 
 
-# Load existing results from file if available
 async def send_telegram_alert(video_path,report):
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

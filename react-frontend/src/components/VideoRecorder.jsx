@@ -61,7 +61,7 @@ const VideoRecorder = () => {
     formData.append("video", videoBlob, filename);
 
     try {
-      const response = await fetch("http://192.168.1.78:5000/upload", {
+      const response = await fetch("http://127.0.0.1:5000/upload", {
         method: "POST",
         body: formData,
       });
@@ -86,7 +86,7 @@ const VideoRecorder = () => {
 
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`http://192.168.1.78:5000/result/${filename}`)
+        const response = await fetch(`http://127.0.0.1:5000/result/${filename}`)
 
         if (!response.ok) throw new Error("No results yet");
 
