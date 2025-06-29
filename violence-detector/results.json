@@ -150,5 +150,9 @@
   "Non Violence": {
     "highest_accuracy": 0.7166640162467957,
     "average_accuracy": 0.23381149768829346
+  },
+  "capture_2025_06_27T10_57_33_568Z.webm": {
+    "highest_accuracy": 0.653300404548645,
+    "average_accuracy": 0.23866216838359833
   }
 }
